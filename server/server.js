@@ -20,11 +20,21 @@ const io = new Server(server, {
 
 io.on('connection',socket=>{
   console.log('a user connected with id: ', socket.id);
-  socket.on('send_message',(data)=>{
-    console.log(data);
-    socket.broadcast.emit('receive_message',data);
-  })
-})
+
+  socket.on("join_room", (data) => {
+    socket.join(data);
+  });
+
+  socket.on("send_message", (data) => {
+    if(data.room!=''){
+    socket.to(data.room).emit("receive_message", data);
+
+    }else{
+      socket.broadcast.emit("receive_message", data);
+    }
+  });
+});
+
 server.listen(3001, () => {
   console.log("SERVER IS RUNNING");
 });
